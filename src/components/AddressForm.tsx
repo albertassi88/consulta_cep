@@ -1,22 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Address } from '../types';
 
 const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave }) => {
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState<Address | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cache, setCache] = useState<Address[]>([]);
+
+  useEffect(() => {
+    const savedCache = localStorage.getItem('addresses');
+    if (savedCache) {
+      setCache(JSON.parse(savedCache));
+    }
+  }, []);
 
   const fetchAddress = async (cep: string) => {
+    const formattedCep = cep.replace(/(\d{5})(\d)/, '$1-$2');
+    const foundAddress = cache.find(e => e.cep === formattedCep);    
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await response.json();
-      if (data.erro) {
-        setError('CEP não encontrado');
-        setAddress(null);
-      } else {
-        setAddress(data);
-        setError(null);
-      }
+        if (!foundAddress) {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+            if (data.erro) {
+              setError('CEP não encontrado');
+              setAddress(null);
+            } else if (!foundAddress) {
+              setAddress(data);
+              const newCache = [...cache, data];
+              setCache(newCache);
+              setError(null); 
+            }
+        }
     } catch (err) {
       setError('Erro ao consultar o CEP');
       setAddress(null);
