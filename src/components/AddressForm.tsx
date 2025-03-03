@@ -6,6 +6,7 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
   const [address, setAddress] = useState<Address | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cache, setCache] = useState<Address[]>([]);
+  const [validStorage, setValidStorage] = useState<Address[]>([]);
 
   useEffect(() => {
     const savedCache = localStorage.getItem('addresses');
@@ -16,23 +17,34 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
 
   const fetchAddress = async (cep: string) => {
     const formattedCep = cep.replace(/(\d{5})(\d)/, '$1-$2');
-    const foundAddress = cache.find(e => e.cep === formattedCep);    
+    const foundAddress = cache.find(item => item.cep === formattedCep);  
+    const savedCache = JSON.parse(localStorage.getItem('addresses') || '[]');
+    const addressSave = savedCache.find((item: any) => item.cep === formattedCep);  
+    setValidStorage(addressSave);
     try {
         if (!foundAddress) {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await response.json();
             if (data.erro) {
-              setError('CEP não encontrado');
-              setAddress(null);
+                const cepFound: any = { cep: formattedCep };  
+                const newCache = [...cache, cepFound];   
+                setCache(newCache);           
+                setError('CEP não encontrado!');
             } else if (!foundAddress) {
-              setAddress(data);
-              const newCache = [...cache, data];
-              setCache(newCache);
-              setError(null); 
+                setAddress(data);
+                const newCache = [...cache, data];                
+                setCache(newCache);
+                setError(null); 
+            }
+        } else {
+            setAddress(foundAddress);
+            if (foundAddress?.logradouro) {
+                setError(null); 
+            } else {
+                setError('CEP não encontrado!');
             }
         }
     } catch (err) {
-      setError('Erro ao consultar o CEP');
       setAddress(null);
     }
   };
@@ -65,7 +77,7 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
         />
       </div>
       {error && <p className="text-red-500">{error}</p>}
-      {address && (
+      {address && !error && (
         <div className="mb-4">
           <p><strong>Logradouro:</strong> {address.logradouro}</p>
           <p><strong>Bairro:</strong> {address.bairro}</p>
@@ -75,7 +87,7 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
       )}
       <button
         onClick={handleSave}
-        disabled={!address}
+        disabled={!address || !!validStorage || !!error}
         className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-400"
       >
         Salvar
