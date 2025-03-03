@@ -1,13 +1,30 @@
-import './App.css'
+import React, { useState } from 'react';
+import AddressForm from './components/AddressForm';
+import { Address } from './types';
 
-function App() {
+const App: React.FC = () => {
+  const [addresses, setAddresses] = useState<Address[]>([]);
+
+  const handleSave = (address: Address) => {
+    setAddresses((prev) => [...prev, address]);
+    localStorage.setItem('addresses', JSON.stringify([...addresses, address]));
+  };
+
+  React.useEffect(() => {
+    const savedAddresses = localStorage.getItem('addresses');
+    if (savedAddresses) {
+      setAddresses(JSON.parse(savedAddresses));
+    }
+  }, []);
+
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-    </>
-  )
-}
+    <div className="min-h-screen bg-gray-100">
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Consulta de CEP</h1>
+        <AddressForm onSave={handleSave} />
+      </div>
+    </div>
+  );
+};
 
-export default App
+export default App;
