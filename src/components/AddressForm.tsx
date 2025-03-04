@@ -16,17 +16,17 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
   }, []);
 
   const fetchAddress = async (cep: string) => {
-    const formattedCep = cep.replace(/(\d{5})(\d)/, '$1-$2');
-    const foundAddress = cache.find(item => item.cep === formattedCep);  
+    const foundAddress = cache.find(item => item.cep === cep);  
+    console.log(foundAddress)
     const savedCache = JSON.parse(localStorage.getItem('addresses') || '[]');
-    const addressSave = savedCache.find((item: any) => item.cep === formattedCep);  
+    const addressSave = savedCache.find((item: any) => item.cep === cep);  
     setValidStorage(addressSave);
     try {
         if (!foundAddress) {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await response.json();
             if (data.erro) {
-                const cepFound: any = { cep: formattedCep };  
+                const cepFound: any = { cep: cep };  
                 const newCache = [...cache, cepFound];   
                 setCache(newCache);           
                 setError('CEP não encontrado!');
@@ -50,7 +50,7 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
   };
 
   const handleBlur = () => {
-    if (cep.length === 8) {
+    if (cep.length === 9) {
       fetchAddress(cep);
     }
   };
@@ -63,35 +63,55 @@ const AddressForm: React.FC<{ onSave: (address: Address) => void }> = ({ onSave 
     }
   };
 
+  const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2');  
+    setCep(input);
+  };
+
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">CEP</label>
-        <input
-          type="text"
-          value={cep}
-          onChange={(e) => setCep(e.target.value)}
-          onBlur={handleBlur}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          maxLength={8}
-        />
-      </div>
-      {error && <p className="text-red-500">{error}</p>}
-      {address && !error && (
-        <div className="mb-4">
-          <p><strong>Logradouro:</strong> {address.logradouro}</p>
-          <p><strong>Bairro:</strong> {address.bairro}</p>
-          <p><strong>Cidade:</strong> {address.localidade}</p>
-          <p><strong>Estado:</strong> {address.uf}</p>
-        </div>
-      )}
-      <button
-        onClick={handleSave}
-        disabled={!address || !!validStorage || !!error}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-400"
-      >
-        Salvar
-      </button>
+    <div className="p-8">
+        <div className="mb-8">
+            <label htmlFor="cep" className="block text-sm font-medium text-gray-700 mb-2">CEP</label>
+            <input
+                type="text"
+                value={cep}
+                onChange={handleCepChange}
+                onBlur={handleBlur}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                maxLength={9}
+            />
+        </div>    
+        {error && <p className="text-red-500 text-xs mb-3.5 font-bold -mt-7.5">{error}</p>}
+        {address && !error && ( 
+            <div className="bg-indigo-50 rounded-xl p-6 mb-6">
+                <div className="space-y-3">
+                    <div className="flex">
+                        <span className="font-medium text-indigo-800 w-28">Logradouro:</span>
+                        <span className="text-gray-700">{address.logradouro}</span>
+                    </div>
+                    <div className="flex">
+                        <span className="font-medium text-indigo-800 w-28">Bairro:</span>
+                        <span className="text-gray-700">{address.bairro}</span>
+                    </div>
+                    <div className="flex">
+                        <span className="font-medium text-indigo-800 w-28">Cidade:</span>
+                        <span className="text-gray-700">{address.localidade}</span>
+                    </div>
+                    <div className="flex">
+                        <span className="font-medium text-indigo-800 w-28">Estado:</span>
+                        <span className="text-gray-700">{address.uf}</span>
+                    </div>
+                </div>
+            </div>
+        )}
+        <button
+            onClick={handleSave}
+            disabled={!address || !!validStorage || !!error}
+            className="bg-indigo-500 text-white px-4 py-2 rounded-md disabled:bg-gray-400 w-24 font-bold"
+            >
+            Salvar
+        </button>
+        {(validStorage && address) && <p className="text-red-400 text-xs mb-3.5">Endereço salvo!</p>}
     </div>
   );
 };

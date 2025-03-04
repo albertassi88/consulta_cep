@@ -19,11 +19,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Consulta de CEP</h1>
-        <AddressForm onSave={handleSave} />
-        <AddressList addresses={addresses} />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-12 px-4">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-violet-300 to-indigo-300 p-6">
+          <h1 className="text-3xl font-bold text-white text-center">Consulta de CEP</h1>
+          <AddressForm onSave={handleSave} />
+          <AddressList addresses={addresses} />
+        </div>
       </div>
     </div>
   );
