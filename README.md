@@ -1,54 +1,54 @@
-# React + TypeScript + Vite
+# Consulta de CEP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto é uma aplicação React com TypeScript e TailwindCSS que permite ao usuário consultar endereços via API do ViaCEP, armazená-los localmente e listá-los.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Instruções de instalação e execução
 
-## Expanding the ESLint configuration
+Siga os passos abaixo para instalar e executar o projeto localmente.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Pré-requisitos
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- [Node.js](https://nodejs.org/) (versão 16 ou superior)
+- [npm](https://www.npmjs.com/) (gerenciador de pacotes)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Passo a passo
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/seu-usuario/consulta-cep.git
+   cd consulta-cep
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+2. **Instale as dependências:**
+  - npm install
+
+3. **Execute o projeto:**
+  - npm start
+
+4. **Acesse a aplicação:**
+  - http://localhost:3000
+
+### Decisões técnicas adotadas
+
+## Tecnologias utilizadas
+
+- **React**: Escolhido por sua popularidade, facilidade de uso e grande comunidade.
+- **TypeScript**: Adotado para adicionar tipagem estática ao projeto, melhorando a segurança e a manutenibilidade do código.
+- **TailwindCSS**: Utilizado para estilização rápida e consistente, com foco em utilitários CSS.
+- **API ViaCEP**: Escolhida por ser gratuita, confiável e de fácil integração.
+
+## Estrutura do projeto
+
+- **Componentização**: O projeto foi dividido em componentes reutilizáveis, como `AddressForm` (formulário de consulta) e `AddressList` (listagem de endereços).
+- **Gerenciamento de estado**: O estado da aplicação foi gerenciado usando `useState` do React, sem a necessidade de bibliotecas externas como Redux ou Context API.
+- **Armazenamento local**: Os endereços consultados são armazenados no `localStorage` para persistência dos dados mesmo após recarregar a página.
+
+## Cache de consultas
+
+- Para evitar consultas desnecessárias à API, foi implementado um **cache local** que armazena os endereços já consultados. Se o usuário digitar um CEP que já foi pesquisado anteriormente, os dados são recuperados do cache em vez de fazer uma nova requisição.
+
+## Design responsivo
+
+- O layout foi desenvolvido com **TailwindCSS**, garantindo que a aplicação seja totalmente responsiva.
+
