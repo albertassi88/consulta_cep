@@ -16,7 +16,7 @@ Siga os passos abaixo para instalar e executar o projeto localmente.
 ### Passo a passo
 
 1. **Clone o repositório**:
-   git clone https://github.com/albertassi88/consulta_cep.git
+  - git clone https://github.com/albertassi88/consulta_cep.git
 
 2. **Instale as dependências:**
   - npm install
